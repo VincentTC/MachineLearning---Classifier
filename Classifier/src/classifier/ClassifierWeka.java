@@ -138,10 +138,7 @@ public class ClassifierWeka {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws IOException, Exception {
-        // TODO code application logic here
-        
         Classifier classifierModel = null;
-        double splitPercentage;
         
         System.out.print("Data filename : ");
         String filename = input.readLine();
@@ -271,85 +268,6 @@ public class ClassifierWeka {
                 }
             }
         }
-        
-//        while (true) {
-//            System.out.println();
-//            System.out.println("==== Select Option ====");
-//            System.out.println("1. Remove Attribute");
-//            System.out.println("2. Filter : Resample");
-//            System.out.println("3. Build Id3 Classifier");
-//            System.out.println("4. Build J48 Classifier");
-//            System.out.println("5. Testing Model Given Data Set");
-//            System.out.println("6. 10-fold Cross Validation");
-//            System.out.println("7. Percentage Split");
-//            System.out.println("8. Save Model");
-//            System.out.println("9. Load Model");
-//            System.out.println("10. Classify Input Data");
-//            System.out.println("*** Remember to build classifier first before evaluating or testing data set");
-//
-//            System.out.print("Your choice : ");
-//            option = Integer.parseInt(input.readLine());
-//            System.out.println();
-//            switch(option) {
-//            case 1 :
-//                System.out.print("Input attribute number to remove : ");
-//                String attribute = input.readLine();
-//                System.out.println("Before: \n" + data.toString());
-//                data = removeAttribute(data, attribute);
-//                System.out.println(data.toString());
-//                break;
-//            case 2 :
-//                data = resample(data);
-//                System.out.println("After resample");
-//                System.out.println(data.toString());
-//                break;
-//            case 3 :
-//                classifierModel = (Classifier)new Id3();
-//                buildClassifier(classifierModel, data);
-//                System.out.println("Id3 classifier has been built");
-//                break;
-//            case 4 : 
-//                classifierModel = (Classifier)new J48();
-//                buildClassifier(classifierModel, data);
-//                System.out.println("J48 classifier has been built");
-//                break;
-//            case 5 :
-//                System.out.print("Input test data file name : ");
-//                filename = input.readLine();
-//                testData = loadData(filename);
-//                evaluateModel(classifierModel,data,testData);
-//                break;
-//            case 6 :
-//                crossValidation(classifierModel,data);
-//                break;
-//            case 7 :
-//                percentageSplit(classifierModel,data);
-//                break;
-//            case 8 :
-//                System.out.print("Input model name to save : ");
-//                filename = input.readLine();
-//                saveModel(classifierModel, filename);
-//                break;
-//            case 9 :
-//                System.out.print("Input model name to load : ");
-//                filename = input.readLine();
-//                classifierModel = loadModel(filename);
-//                break;
-//            case 10 : 
-//                Instances unlabeledData = loadData("unseen-data.arff");
-// 
-//                System.out.println("Classifier Result : ");
-//                for (int i = 0; i < unlabeledData.numInstances(); i++) {
-//                    double clsLabel = classifierModel.classifyInstance(unlabeledData.instance(i));
-//                    System.out.println(unlabeledData.classAttribute().value((int) clsLabel));
-//                }
-//                break;
-//            default :
-//               System.out.println("Invalid Option");
-//               break;
-//            }
-//        }
-
     }
     
 }
