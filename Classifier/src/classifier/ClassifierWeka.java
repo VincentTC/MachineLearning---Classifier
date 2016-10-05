@@ -75,22 +75,20 @@ public class ClassifierWeka {
 	return filteredInstances;
     }
     
-    public static void buildClassifier(Classifier classifierModel, Instances data) throws Exception {
-        classifierModel.buildClassifier(data);
-        
-        System.out.println("Successfully Build Classifier");
-    }
-    
     public static void evaluateModel(Classifier classifierModel, Instances trainData, Instances testData) throws Exception{
         Evaluation eval = new Evaluation(trainData);
         eval.evaluateModel(classifierModel, testData);
-        System.out.println(eval.toSummaryString("\nResults\n======\n", false));
+        System.out.println(eval.toSummaryString("\n=== Evaluation on test ===\n=== Summary ===\n", false));
+        System.out.println(eval.toClassDetailsString());
+        System.out.println(eval.toMatrixString());
     }
     
     public static void crossValidation(Classifier classifierModel, Instances data) throws Exception {
         Evaluation eval = new Evaluation(data);
         eval.crossValidateModel(classifierModel, data, 10, new Random(1));
-        System.out.println("Accuracy: "+Double.toString(eval.pctCorrect()));
+        System.out.println(eval.toSummaryString("=== Stratified cross-validation ===\n=== Summary ===\n", false));
+        System.out.println(eval.toClassDetailsString());
+        System.out.println(eval.toMatrixString());
     }
     
     public static void percentageSplit(Classifier classifierModel, Instances data) throws IOException, Exception{
@@ -164,26 +162,27 @@ public class ClassifierWeka {
                     break;
                 case 1 :
                     classifierModel = (Classifier)new Id3();
-                    buildClassifier(classifierModel, data);
-                    System.out.println("Id3 Weka classifier has been built");
+                    classifierModel.buildClassifier(data);
+                    System.out.println("Successfully Build Id3 Weka Classifier");
                     option = 999;
                     break;
                 case 2 :
                     classifierModel = (Classifier)new J48();
-                    buildClassifier(classifierModel, data);
-                    System.out.println("J48 Weka classifier has been built");
+                    classifierModel.buildClassifier(data);
+                    System.out.println("Successfully Build J48 Weka Classifier");
                     option = 999;
                     break;
                 case 3 :
-                    classifierModel = (Classifier)new Id3();
-                    buildClassifier(classifierModel, data);
-                    System.out.println("MyId3 classifier has been built");
+                    classifierModel = (Classifier)new MyId3();
+                    classifierModel.buildClassifier(data);
+                    System.out.println("Successfully Build MyId3 Classifier");
                     option = 999;
                     break;
                 case 4 : 
-                    classifierModel = (Classifier)new J48();
-                    buildClassifier(classifierModel, data);
+                    classifierModel = (Classifier)new MyJ48();
+                    classifierModel.buildClassifier(data);
                     System.out.println("MyJ48 classifier has been built");
+                    System.out.println("Successfully Build MyJ48 Classifier");
                     option = 999;
                     break;
                 default :
@@ -203,7 +202,8 @@ public class ClassifierWeka {
                 System.out.println("6. Save Model");
                 System.out.println("7. Load Model");
                 System.out.println("8. Classify Unseen Data");
-                System.out.println("9. Change Classifier");
+                System.out.println("9. Print Data Set");
+                System.out.println("10. Change Classifier");
                 System.out.println("0. Exit\n");
                 
                 System.out.print("Choose Menu : ");
@@ -227,16 +227,16 @@ public class ClassifierWeka {
                         System.out.println(data.toString());
                         break;
                     case 3 :
-                        System.out.print("Test data filename : ");
+                        System.out.print("Supplied test set filename : ");
                         filename = input.readLine();
                         Instances testData = loadData(filename);
-                        evaluateModel(classifierModel,data,testData);
+                        evaluateModel(classifierModel, data, testData);
                         break;
                     case 4 :
-                        crossValidation(classifierModel,data);
+                        crossValidation(classifierModel, data);
                         break;
                     case 5 :
-                        percentageSplit(classifierModel,data);
+                        percentageSplit(classifierModel, data);
                         break;
                     case 6 :
                         System.out.print("Save model filename : ");
@@ -250,14 +250,19 @@ public class ClassifierWeka {
                         break;
                     case 8 : 
                         Instances unseenData = loadData("unseen-data.arff");
-
-                        System.out.println("Classify Result : ");
-                        for (int i=0; i < unseenData.numInstances(); i++) {
+                        Instances labeledData = new Instances(unseenData);
+                        
+                        for (int i = 0; i < unseenData.numInstances(); i++) {
                             double clsLabel = classifierModel.classifyInstance(unseenData.instance(i));
-                            System.out.println(unseenData.classAttribute().value((int) clsLabel));
+                            labeledData.instance(i).setClassValue(clsLabel);
                         }
+                        System.out.println("\nClassify Result :\n");
+                        System.out.println(labeledData.toString());
                         break;
                     case 9 :
+                        System.out.println(data.toString());
+                        break;
+                    case 10 :
                         option = 0;
                         break;
                     default :
@@ -269,5 +274,4 @@ public class ClassifierWeka {
             }
         }
     }
-    
 }
