@@ -253,7 +253,9 @@ public class ClassifierWeka {
                         classifierModel = loadModel(filename);
                         break;
                     case 8 : 
-                        Instances unseenData = loadData("unseen-data.arff");
+                        System.out.print("Load unseen data filename : ");
+                        filename = input.readLine();
+                        Instances unseenData = loadData(filename);
                         Instances labeledData = new Instances(unseenData);
                         
                         for (int i = 0; i < unseenData.numInstances(); i++) {
