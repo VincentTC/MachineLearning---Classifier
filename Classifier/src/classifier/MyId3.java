@@ -1,11 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package classifier;
 
-import java.util.Enumeration;
 import weka.classifiers.Classifier;
 import weka.classifiers.Sourcable;
 import weka.core.Attribute;
@@ -17,34 +11,15 @@ import weka.core.RevisionUtils;
 import weka.core.TechnicalInformation;
 import weka.core.TechnicalInformationHandler;
 import weka.core.Utils;
+import java.util.Enumeration;
 
 /**
  *
  * @author user
  */
 
-import weka.classifiers.Classifier;
-import weka.classifiers.Sourcable;
-import weka.core.Attribute;
-import weka.core.Capabilities;
-import weka.core.Instance;
-import weka.core.Instances;
-import weka.core.NoSupportForMissingValuesException;
-import weka.core.RevisionUtils;
-import weka.core.TechnicalInformation;
-import weka.core.TechnicalInformationHandler;
-import weka.core.Utils;
-import weka.core.Capabilities.Capability;
-import weka.core.TechnicalInformation.Field;
-import weka.core.TechnicalInformation.Type;
-
-import java.util.Enumeration;
-
 public class MyId3 extends Classifier implements TechnicalInformationHandler, Sourcable {
 
-  /** for serialization */
-  static final long serialVersionUID = -2693678647096322561L;
-  
   /** The node's successors. */ 
   private MyId3[] m_Successors;
 
@@ -59,19 +34,6 @@ public class MyId3 extends Classifier implements TechnicalInformationHandler, So
 
   /** Class attribute of dataset. */
   private Attribute m_ClassAttribute;
-
-  /**
-   * Returns a string describing the classifier.
-   * @return a description suitable for the GUI.
-   */
-  public String globalInfo() {
-
-    return  "Class for constructing an unpruned decision tree based on the ID3 "
-      + "algorithm. Can only deal with nominal attributes. No missing values "
-      + "allowed. Empty leaves may result in unclassified instances. For more "
-      + "information see: \n\n"
-      + getTechnicalInformation().toString();
-  }
 
   /**
    * Returns an instance of a TechnicalInformation object, containing 
