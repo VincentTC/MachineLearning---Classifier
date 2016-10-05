@@ -217,9 +217,13 @@ public class ClassifierWeka {
                         break;
                     case 1 :
                         System.out.print("Attribute column to remove : ");
-                        String attribute = input.readLine();
-                        data = removeAttribute(data, attribute);
-                        System.out.println(data.toString());
+                        String attributeColumn = input.readLine();
+                        if (Integer.parseInt(attributeColumn) == data.numAttributes()){
+                            System.out.println("Class can't be removed.");
+                        } else {
+                            data = removeAttribute(data, attributeColumn);
+                            System.out.println(data.toString());
+                        }
                         break;
                     case 2 :
                         data = resample(data);
