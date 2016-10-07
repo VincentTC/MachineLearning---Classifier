@@ -8,6 +8,7 @@ import weka.core.Instances;
 import weka.core.NoSupportForMissingValuesException;
 import weka.core.Utils;
 import java.util.Enumeration;
+import weka.classifiers.Evaluation;
 
 /**
  *
@@ -31,28 +32,7 @@ public class MyId3 extends Classifier {
   /** Class attribute of dataset. */
   private Attribute m_ClassAttribute;
 
-  /**
-   * Returns default capabilities of the classifier.
-   *
-   * @return      the capabilities of this classifier
-   */
-  public Capabilities getCapabilities() {
-    Capabilities result = super.getCapabilities();
-    result.disableAll();
-
-    // attributes
-    result.enable(Capabilities.Capability.NOMINAL_ATTRIBUTES);
-
-    // class
-    result.enable(Capabilities.Capability.NOMINAL_CLASS);
-    result.enable(Capabilities.Capability.MISSING_CLASS_VALUES);
-
-    // instances
-    result.setMinimumNumberInstances(0);
-    
-    return result;
-  }
-
+  
   /**
    * Builds Id3 decision tree classifier.
    *
@@ -61,8 +41,22 @@ public class MyId3 extends Classifier {
    */
   public void buildClassifier(Instances data) throws Exception {
 
-    // can classifier handle the data?
-    getCapabilities().testWithFail(data);
+    if (!data.classAttribute().isNominal()) {  
+      throw new Exception("Id3: nominal class, please.");  
+    }  
+    Enumeration enumAtt = data.enumerateAttributes();  
+    while (enumAtt.hasMoreElements()) {  
+      Attribute attr = (Attribute) enumAtt.nextElement();  
+      if (!attr.isNominal()) {  
+        throw new Exception("Id3: only nominal attributes, please.");  
+      }  
+      Enumeration enumInstance = data.enumerateInstances();  
+      while (enumInstance.hasMoreElements()) {  
+        if (((Instance) enumInstance.nextElement()).isMissing(attr)) {  
+          throw new Exception("Id3: no missing values, please.");  
+        }  
+      }  
+    }  
 
     // remove instances with missing class
     data = new Instances(data);
@@ -151,10 +145,10 @@ public class MyId3 extends Classifier {
   public double[] distributionForInstance(Instance instance) 
     throws NoSupportForMissingValuesException {
 
-    if (instance.hasMissingValue()) {
-      throw new NoSupportForMissingValuesException("Id3: no missing values, "
-                                                   + "please.");
-    }
+//    if (instance.hasMissingValue()) {
+//      throw new NoSupportForMissingValuesException("Id3: no missing values, "
+//                                                   + "please.");
+//    }
     if (m_Attribute == null) {
       return m_Distribution;
     } else { 
@@ -242,9 +236,7 @@ public class MyId3 extends Classifier {
       Instance inst = (Instance) instEnum.nextElement();
       splitData[(int) inst.value(att)].add(inst);
     }
-    for (int i = 0; i < splitData.length; i++) {
-      splitData[i].compactify();
-    }
+    
     return splitData;
   }
 
@@ -283,6 +275,11 @@ public class MyId3 extends Classifier {
    * @param args the options for the classifier
    */
   public static void main(String[] args) {
-    runClassifier(new MyId3(), args);
+//    runClassifier(new MyId3(), args);
+    try {  
+        System.out.println(Evaluation.evaluateModel(new MyId3(), args));  
+    } catch (Exception e) {  
+        System.err.println(e.getMessage());  
+    }  
   }
 }
