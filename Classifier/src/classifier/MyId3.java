@@ -1,15 +1,11 @@
 package classifier;
 
 import weka.classifiers.Classifier;
-import weka.classifiers.Sourcable;
 import weka.core.Attribute;
 import weka.core.Capabilities;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.NoSupportForMissingValuesException;
-import weka.core.RevisionUtils;
-import weka.core.TechnicalInformation;
-import weka.core.TechnicalInformationHandler;
 import weka.core.Utils;
 import java.util.Enumeration;
 
@@ -18,7 +14,7 @@ import java.util.Enumeration;
  * @author user
  */
 
-public class MyId3 extends Classifier implements TechnicalInformationHandler, Sourcable {
+public class MyId3 extends Classifier {
 
   /** The node's successors. */ 
   private MyId3[] m_Successors;
@@ -34,28 +30,6 @@ public class MyId3 extends Classifier implements TechnicalInformationHandler, So
 
   /** Class attribute of dataset. */
   private Attribute m_ClassAttribute;
-
-  /**
-   * Returns an instance of a TechnicalInformation object, containing 
-   * detailed information about the technical background of this class,
-   * e.g., paper reference or book this class is based on.
-   * 
-   * @return the technical information about this class
-   */
-  public TechnicalInformation getTechnicalInformation() {
-    TechnicalInformation 	result;
-    
-    result = new TechnicalInformation(TechnicalInformation.Type.ARTICLE);
-    result.setValue(TechnicalInformation.Field.AUTHOR, "R. Quinlan");
-    result.setValue(TechnicalInformation.Field.YEAR, "1986");
-    result.setValue(TechnicalInformation.Field.TITLE, "Induction of decision trees");
-    result.setValue(TechnicalInformation.Field.JOURNAL, "Machine Learning");
-    result.setValue(TechnicalInformation.Field.VOLUME, "1");
-    result.setValue(TechnicalInformation.Field.NUMBER, "1");
-    result.setValue(TechnicalInformation.Field.PAGES, "81-106");
-    
-    return result;
-  }
 
   /**
    * Returns default capabilities of the classifier.
@@ -301,122 +275,6 @@ public class MyId3 extends Classifier implements TechnicalInformationHandler, So
       }
     }
     return text.toString();
-  }
-
-  /**
-   * Adds this tree recursively to the buffer.
-   * 
-   * @param id          the unqiue id for the method
-   * @param buffer      the buffer to add the source code to
-   * @return            the last ID being used
-   * @throws Exception  if something goes wrong
-   */
-  protected int toSource(int id, StringBuffer buffer) throws Exception {
-    int                 result;
-    int                 i;
-    int                 newID;
-    StringBuffer[]      subBuffers;
-    
-    buffer.append("\n");
-    buffer.append("  protected static double node" + id + "(Object[] i) {\n");
-    
-    // leaf?
-    if (m_Attribute == null) {
-      result = id;
-      if (Double.isNaN(m_ClassValue)) {
-        buffer.append("    return Double.NaN;");
-      } else {
-        buffer.append("    return " + m_ClassValue + ";");
-      }
-      if (m_ClassAttribute != null) {
-        buffer.append(" // " + m_ClassAttribute.value((int) m_ClassValue));
-      }
-      buffer.append("\n");
-      buffer.append("  }\n");
-    } else {
-      buffer.append("    checkMissing(i, " + m_Attribute.index() + ");\n\n");
-      buffer.append("    // " + m_Attribute.name() + "\n");
-      
-      // subtree calls
-      subBuffers = new StringBuffer[m_Attribute.numValues()];
-      newID = id;
-      for (i = 0; i < m_Attribute.numValues(); i++) {
-        newID++;
-
-        buffer.append("    ");
-        if (i > 0) {
-          buffer.append("else ");
-        }
-        buffer.append("if (((String) i[" + m_Attribute.index() 
-            + "]).equals(\"" + m_Attribute.value(i) + "\"))\n");
-        buffer.append("      return node" + newID + "(i);\n");
-
-        subBuffers[i] = new StringBuffer();
-        newID = m_Successors[i].toSource(newID, subBuffers[i]);
-      }
-      buffer.append("    else\n");
-      buffer.append("      throw new IllegalArgumentException(\"Value '\" + i["
-          + m_Attribute.index() + "] + \"' is not allowed!\");\n");
-      buffer.append("  }\n");
-
-      // output subtree code
-      for (i = 0; i < m_Attribute.numValues(); i++) {
-        buffer.append(subBuffers[i].toString());
-      }
-      subBuffers = null;
-      
-      result = newID;
-    }
-    
-    return result;
-  }
-  
-  /**
-   * Returns a string that describes the classifier as source. The
-   * classifier will be contained in a class with the given name (there may
-   * be auxiliary classes),
-   * and will contain a method with the signature:
-   * <pre><code>
-   * public static double classify(Object[] i);
-   * </code></pre>
-   * where the array <code>i</code> contains elements that are either
-   * Double, String, with missing values represented as null. The generated
-   * code is public domain and comes with no warranty. <br/>
-   * Note: works only if class attribute is the last attribute in the dataset.
-   *
-   * @param className the name that should be given to the source class.
-   * @return the object source described by a string
-   * @throws Exception if the source can't be computed
-   */
-  public String toSource(String className) throws Exception {
-    StringBuffer        result;
-    int                 id;
-    
-    result = new StringBuffer();
-
-    result.append("class " + className + " {\n");
-    result.append("  private static void checkMissing(Object[] i, int index) {\n");
-    result.append("    if (i[index] == null)\n");
-    result.append("      throw new IllegalArgumentException(\"Null values "
-        + "are not allowed!\");\n");
-    result.append("  }\n\n");
-    result.append("  public static double classify(Object[] i) {\n");
-    id = 0;
-    result.append("    return node" + id + "(i);\n");
-    result.append("  }\n");
-    toSource(id, result);
-    result.append("}\n");
-
-    return result.toString();
-  }
-  
-  /**
-   * Returns the revision string.
-   * 
-   * @return		the revision
-   */
-  public String getRevision() {
-    return RevisionUtils.extract("$Revision: 6404 $");
   }
 
   /**
