@@ -145,10 +145,6 @@ public class MyId3 extends Classifier {
   public double[] distributionForInstance(Instance instance) 
     throws NoSupportForMissingValuesException {
 
-//    if (instance.hasMissingValue()) {
-//      throw new NoSupportForMissingValuesException("Id3: no missing values, "
-//                                                   + "please.");
-//    }
     if (m_Attribute == null) {
       return m_Distribution;
     } else { 
